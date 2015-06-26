@@ -194,9 +194,6 @@ public class ForecastFragment extends Fragment {
                 resultStrs[i] = day + " - " + description + " - " + highAndLow;
             }
 
-            for (String s : resultStrs) {
-                Log.v(LOG_TAG, "Forecast entry: " + s);
-            }
             return resultStrs;
         }
 
@@ -241,8 +238,6 @@ public class ForecastFragment extends Fragment {
                         .build();
                 URL url = new URL(builder.toString());
 
-                Log.v(LOG_TAG, "Built URI " + builder.toString());
-
                 // Create the request to OpenWeatherMap, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
@@ -271,7 +266,6 @@ public class ForecastFragment extends Fragment {
                 }
                 forecastJsonStr = buffer.toString();
 
-                Log.v(LOG_TAG, "Forecast JSON String: " + forecastJsonStr);
             } catch (IOException e) {
                 Log.e("PlaceholderFragment", "Error ", e);
                 // If the code didn't successfully get the weather data,
@@ -299,6 +293,15 @@ public class ForecastFragment extends Fragment {
 
             // This will only happen if there was an error getting or parsing the forecast
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(String[] result) {
+            if (result != null) {
+                List<String> weekForecast = new ArrayList<>(Arrays.asList(result));
+                mForecastAdapter.clear();
+                mForecastAdapter.addAll(weekForecast);
+            }
         }
     }
 }
