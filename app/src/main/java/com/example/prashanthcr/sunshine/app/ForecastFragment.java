@@ -309,9 +309,11 @@ public class ForecastFragment extends Fragment {
         @Override
         protected void onPostExecute(String[] result) {
             if (result != null) {
-                List<String> weekForecast = new ArrayList<>(Arrays.asList(result));
                 mForecastAdapter.clear();
-                mForecastAdapter.addAll(weekForecast);
+                for(String dayForecastStr : result) {
+                    mForecastAdapter.add(dayForecastStr);
+                }
+                // New data is back from the server.  Hooray!
             }
         }
     }
