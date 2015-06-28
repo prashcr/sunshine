@@ -128,7 +128,12 @@ public class ForecastFragment extends Fragment {
         /**
          * Prepare the weather high/lows for presentation
          */
-        private String formatHighLows(double high, double low) {
+        private String formatHighLows(double high, double low, String units) {
+            if (units == getString(R.string.pref_units_imperial)) {
+                high = high * 9/5 + 32;
+                low = low * 9/5 + 32;
+            }
+
             // For presentation, assume the user doesn't care about tenths of a degree.
             long roundedHigh = Math.round(high);
             long roundedLow = Math.round(low);
@@ -176,6 +181,16 @@ public class ForecastFragment extends Fragment {
             dayTime = new Time();
 
             String[] resultStrs = new String[numDays];
+
+            // Data is fetched in Celsius by default.
+            // If user prefers to see in Fahrenheit, convert the values here.
+            // We do this rather than fetching in Fahrenheit so that the user can
+            // change this option without us having to re-fetch the data once
+            // we start storing the values in a database.
+            String units = PreferenceManager.getDefaultSharedPreferences(getActivity())
+                    .getString(getString(R.string.pref_units_key),
+                            getString(R.string.pref_units_default));
+
             for(int i = 0; i < weatherArray.length(); i++) {
                 // For now, using the format "Day, description, hi/low"
                 String day;
@@ -203,7 +218,7 @@ public class ForecastFragment extends Fragment {
                 double high = temperatureObject.getDouble(OWM_MAX);
                 double low = temperatureObject.getDouble(OWM_MIN);
 
-                highAndLow = formatHighLows(high, low);
+                highAndLow = formatHighLows(high, low, units);
                 resultStrs[i] = day + " - " + description + " - " + highAndLow;
             }
 
